@@ -1,7 +1,7 @@
 import argparse
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType
-from pyspark.sql.functions import from_json
+from pyspark.sql.functions import from_json, explode, col
 
 
 def get_json_schema():
@@ -87,4 +87,21 @@ if __name__ == '__main__':
 
     print("showing json expanded df")
     print(json_expanded_df)
-    # JSON Schema
+
+    exploded_df = json_expanded_df \
+        .select("event", "eventTime", "data") \
+        .withColumn("bitstamps", explode("data.bitstamps")) \
+        .drop("data")
+
+    print("printing exploded df")
+    print(exploded_df)
+
+    # Flatten the exploded df
+    flattened_df = exploded_df \
+        .selectExpr("eventId", "cast(eventTime as timestamp) as eventTime",
+                    "bitstamps.id as trnId", "bitstamps.amount as amount",
+                    "bitstamps.amount_traded as amount_traded", "bitstamps.price as price")
+
+
+    print("printing flatteden df")
+    print(flattened_df)
