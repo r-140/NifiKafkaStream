@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     # Flatten the exploded df
     flattened_df = exploded_df \
-        .selectExpr("eventId", "cast(eventTime as timestamp) as eventTime",
+        .selectExpr("event", "cast(eventTime as timestamp) as eventTime",
                     "bitstamps.id as trnId", "bitstamps.amount as amount",
                     "bitstamps.amount_traded as amount_traded", "bitstamps.price as price")
 
