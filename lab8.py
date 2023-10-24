@@ -1,6 +1,7 @@
 import argparse
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType
+from pyspark.sql.functions import from_json
 
 
 def get_json_schema():
@@ -80,12 +81,10 @@ if __name__ == '__main__':
 
     json_df = streaming_df.selectExpr("cast(value as string) as value")
     print("showing json df")
-    json_df.show(5)
-    from pyspark.sql.functions import from_json
+    print(json_df)
 
     json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
 
     print("showing json expanded df")
-    json_expanded_df.show(10)
-
+    print(json_expanded_df)
     # JSON Schema
