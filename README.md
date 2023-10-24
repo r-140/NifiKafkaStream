@@ -1,4 +1,4 @@
-gcloud dataproc jobs submit pyspark lab8.py --cluster=procamp-cluster --region=us-east1 --jars jars/org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 -- --bucket gs://bigdata-procamp-iu --folder streaming_res --topic nain_test_topic
+gcloud dataproc jobs submit pyspark lab8.py --cluster=procamp-cluster --region=us-east1 --jars jars/spark-sql-kafka-0-10_2.12-3.5.0.jar -- --bucket gs://bigdata-procamp-iu --folder streaming_res --topic nain_test_topic
 
 
 
