@@ -29,16 +29,16 @@ def get_json_schema():
     return json_schema
 
 
-def create_streaming_df(topic_name):
+def create_streaming_df(spark_session: SparkSession, topic_name: str):
     # Create the streaming_df to read from kafka
-    streaming_df = ((spark.readStream
+    streaming_df = ((spark_session.readStream
                      .format("kafka")
                      .option("kafka.bootstrap.servers", "127.0.0.1:9092")
                      .option("subscribe", topic_name))
                     .option("startingOffsets", "earliest")
                     .load())
     return streaming_df
-            # .withWatermark("eventTime", "1 minute"))
+    # .withWatermark("eventTime", "1 minute"))
 
 
 def get_args():
@@ -55,6 +55,15 @@ def get_arg(args_dict, arg_name):
     return args_dict[arg_name]
 
 
+def get_spark_session():
+    return (SparkSession.builder
+            .appName("streaming_tasks")
+            .config("spark.streaming.stopGracefullyOnShutdown", True)
+            .config('spark.jars.packages', 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1')
+            .config("spark.sql.shuffle.partitions", 3)
+            .getOrCreate())
+
+
 if __name__ == '__main__':
     args = get_args()
 
@@ -64,14 +73,9 @@ if __name__ == '__main__':
     folder = get_arg(args_dict, "folder")
     topic = get_arg(args_dict, "topic")
 
-    spark = (SparkSession.builder
-             .appName("streaming_tasks")
-             .config("spark.streaming.stopGracefullyOnShutdown", True)
-             .config('spark.jars.packages', 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0')
-             .config("spark.sql.shuffle.partitions", 3)
-             .getOrCreate())
+    spark = get_spark_session()
 
-    streaming_df = create_streaming_df(topic)
+    streaming_df = create_streaming_df(spark, topic)
     print("showing streaming_df")
     streaming_df.show(5)
 
