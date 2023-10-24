@@ -77,7 +77,6 @@ if __name__ == '__main__':
 
     streaming_df = create_streaming_df(spark, topic)
     print("showing streaming_df")
-    streaming_df.show(5)
 
     json_df = streaming_df.selectExpr("cast(value as string) as value")
     print("showing json df")
