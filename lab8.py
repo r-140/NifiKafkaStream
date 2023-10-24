@@ -29,12 +29,12 @@ def get_json_schema():
     return json_schema
 
 
-def create_streaming_df(spark_session: SparkSession, topic_name: str):
+def create_streaming_df(spark: SparkSession, topic_name: str):
     # Create the streaming_df to read from kafka
-    streaming_df = ((spark_session.readStream
+    streaming_df = ((spark.readStream
                      .format("kafka")
                      .option("kafka.bootstrap.servers", "127.0.0.1:9092")
-                     .option("subscribe", topic_name))
+                     .option("subscribe", "nain_test_topic"))
                     .option("startingOffsets", "earliest")
                     .load())
     return streaming_df

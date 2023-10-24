@@ -1,3 +1,9 @@
+gcloud dataproc jobs submit pyspark lab8.py --cluster=procamp-cluster --region=us-east1 --jars jars/org.apache.spark:spark-sql-kafka-0-10_2.12:3.1.2 -- --bucket gs://bigdata-procamp-iu --folder streaming_res --topic nain_test_topic
+
+
+
+
+
 if unit tests failed with timeout error add
 PYSPARK_PYTHON=python
 environment variable
