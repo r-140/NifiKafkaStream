@@ -64,7 +64,12 @@ if __name__ == '__main__':
     folder = get_arg(args_dict, "folder")
     topic = get_arg(args_dict, "topic")
 
-    spark = SparkSession.builder.appName("streaming_tasks").getOrCreate()
+    spark = (SparkSession.builder
+             .appName("streaming_tasks")
+             .config("spark.streaming.stopGracefullyOnShutdown", True)
+             .config('spark.jars.packages', 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.3.0')
+             .config("spark.sql.shuffle.partitions", 3)
+             .getOrCreate())
 
     streaming_df = create_streaming_df(topic)
     print("showing streaming_df")
