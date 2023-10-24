@@ -1,7 +1,7 @@
 import argparse
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType
-from pyspark.sql.functions import from_json, explode, col
+from pyspark.sql.functions import from_json, explode, col, to_date, sum
 
 
 def get_json_schema():
@@ -49,6 +49,18 @@ def get_args():
     parser.add_argument("--topic", help="kafka topic from where data will be read")
     return parser.parse_args()
 
+def write_output(df):
+    # Write the output to console sink to check the output
+    writing_df = df.writeStream \
+        .format("console") \
+        .option("checkpointLocation", "checkpoint_dir") \
+        .outputMode("complete") \
+        .start()
+
+    # Start the streaming application to run until the following happens
+    # 1. Exception in the running program
+    # 2. Manual Interruption
+    writing_df.awaitTermination()
 
 def get_arg(args_dict, arg_name):
     if args_dict[arg_name] is None:
@@ -99,9 +111,18 @@ if __name__ == '__main__':
     # Flatten the exploded df
     flattened_df = exploded_df \
         .selectExpr("event", "cast(eventTime as timestamp) as eventTime",
-                    "bitstamps.id as trnId", "bitstamps.amount as amount",
+                    "bitstamps.amount as amount",
                     "bitstamps.amount_traded as amount_traded", "bitstamps.price as price")
 
 
     print("printing flatteden df")
     print(flattened_df)
+
+    sum_df = flattened_df.where("event = 'order_created'") \
+        .withColumn("sales", col("price")*col("amount")) \
+        .groupBy("eventTime") \
+        .agg(sum("price").alias("sum_price"), sum("sales").alias("total_sales"))
+
+    write_output(sum_df)
+
+

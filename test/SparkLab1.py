@@ -1,84 +1,89 @@
 from pyspark.sql import SparkSession, Window
-from pyspark.sql.functions import when, col, count
+from pyspark.sql.functions import when, col, count, to_date
 
 spark = SparkSession.builder.appName("find_most_popular_dest_airport").getOrCreate()
 
-airports_df = spark.read.csv('data\\airports.csv', header=True)
-# airports_df.show(5)
-airlines_df = spark.read.csv('data\\airlines.csv', header=True).withColumnRenamed('AIRLINE', 'AIRLINE_NAME')
-
-# airlines_df.show(5)
+df = spark.createDataFrame([('1997-02-28 10:30:00',)], ['t'])
+print(df.select(to_date(df.t, "yyyy-MM-dd-HH-mm").alias('date')).collect())
 
 
-flights_df = (spark.read.csv('data\\flights.csv', header=True))
-
-full_df = ((flights_df.join(airports_df, airports_df['IATA_CODE'] == flights_df['ORIGIN_AIRPORT'], 'left_outer')
-            .join(airlines_df, airlines_df['IATA_CODE'] == flights_df['AIRLINE'], 'left_outer'))
-           # .select(flights_df['ORIGIN_AIRPORT'], airports_df['AIRPORT'], flights_df['AIRLINE'],
-           #         airlines_df['AIRLINE_NAME'], flights_df['CANCELLED'])
-           )
-
-# full_df.show(10)
-
-
-# total number of flights per airline
-
-
-
-# flights_df.show(10)
-cancelled_df = ((full_df.select('ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME', 'cancelled')
-                 .where(full_df['cancelled'] == 1)
-                 .groupby(['ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME']).agg(
-    {"*": "count"}).withColumnRenamed('count(1)', 'CANCELLED_FLIGHTS'))
-)
-# cancelled_df.show(5)
-
-processed_df = ((full_df.select('ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME', 'cancelled')
-                 .where(full_df['cancelled'] == 0)
-                 .groupby(['ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME']).agg(
-    {"*": "count"}).withColumnRenamed('count(1)', 'PROCESSED_FLIGHTS'))
-)
-# processed_df.show(5)
-
-airports_and_airline_names_df = ((processed_df.union(cancelled_df).select('ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE',
-                                                                        'AIRLINE_NAME')
-                                 .withColumnRenamed('ORIGIN_AIRPORT', 'AIRPORT_IATA_CODE'))
-                                 .withColumnRenamed('AIRLINE', 'AIRLINE_IATA_CODE').distinct()
-                                 .orderBy('AIRPORT_IATA_CODE', 'AIRPORT', 'AIRLINE_IATA_CODE', 'AIRLINE_NAME'))
-
-airports_and_airline_names_df.show(30)
-
-
-
-cancel_and_processed_flight_df = (airports_and_airline_names_df.join(cancelled_df,
-                                                                     (airports_and_airline_names_df['AIRPORT_IATA_CODE'] ==
-                                                                      cancelled_df['ORIGIN_AIRPORT'])
-                                                                     & (airports_and_airline_names_df['AIRLINE_IATA_CODE'] ==
-                                                                        cancelled_df['AIRLINE']),
-                                                                     'inner')
-                                  .join(processed_df, (
-            airports_and_airline_names_df['AIRPORT_IATA_CODE'] == processed_df['ORIGIN_AIRPORT'])
-                                        & (airports_and_airline_names_df['AIRLINE_IATA_CODE'] == processed_df['AIRLINE']),
-                                        'inner')
-                                  .select(airports_and_airline_names_df['AIRPORT_IATA_CODE'],
-                                          airports_and_airline_names_df['AIRPORT'],
-                                          airports_and_airline_names_df['AIRLINE_IATA_CODE'],
-                                          airports_and_airline_names_df['AIRLINE_NAME'],
-                                          processed_df['PROCESSED_FLIGHTS'], cancelled_df['CANCELLED_FLIGHTS'])
-                                  )
-
-# cancel_and_processed_flight_df.show(20)
 #
-cancel_and_processed_flight_df = cancel_and_processed_flight_df.withColumn("percentage",
-                                                                           ((cancel_and_processed_flight_df['CANCELLED_FLIGHTS'] + cancel_and_processed_flight_df['PROCESSED_FLIGHTS'])/cancel_and_processed_flight_df['CANCELLED_FLIGHTS']))
-
-
-cancel_and_processed_flight_df.orderBy('AIRLINE_NAME', 'percentage')
-# cancel_and_processed_flight_df.show(20)
-
-
-regioanal_airport_df = cancel_and_processed_flight_df.select("*").where(cancel_and_processed_flight_df['AIRPORT_IATA_CODE'] == 'ACT')
-regioanal_airport_df.show()
+# airports_df = spark.read.csv('data\\airports.csv', header=True)
+# # airports_df.show(5)
+# airlines_df = spark.read.csv('data\\airlines.csv', header=True).withColumnRenamed('AIRLINE', 'AIRLINE_NAME')
+#
+# # airlines_df.show(5)
+#
+#
+# flights_df = (spark.read.csv('data\\flights.csv', header=True))
+#
+# full_df = ((flights_df.join(airports_df, airports_df['IATA_CODE'] == flights_df['ORIGIN_AIRPORT'], 'left_outer')
+#             .join(airlines_df, airlines_df['IATA_CODE'] == flights_df['AIRLINE'], 'left_outer'))
+#            # .select(flights_df['ORIGIN_AIRPORT'], airports_df['AIRPORT'], flights_df['AIRLINE'],
+#            #         airlines_df['AIRLINE_NAME'], flights_df['CANCELLED'])
+#            )
+#
+# # full_df.show(10)
+#
+#
+# # total number of flights per airline
+#
+#
+#
+# # flights_df.show(10)
+# cancelled_df = ((full_df.select('ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME', 'cancelled')
+#                  .where(full_df['cancelled'] == 1)
+#                  .groupby(['ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME']).agg(
+#     {"*": "count"}).withColumnRenamed('count(1)', 'CANCELLED_FLIGHTS'))
+# )
+# # cancelled_df.show(5)
+#
+# processed_df = ((full_df.select('ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME', 'cancelled')
+#                  .where(full_df['cancelled'] == 0)
+#                  .groupby(['ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE', 'AIRLINE_NAME']).agg(
+#     {"*": "count"}).withColumnRenamed('count(1)', 'PROCESSED_FLIGHTS'))
+# )
+# # processed_df.show(5)
+#
+# airports_and_airline_names_df = ((processed_df.union(cancelled_df).select('ORIGIN_AIRPORT', 'AIRPORT', 'AIRLINE',
+#                                                                         'AIRLINE_NAME')
+#                                  .withColumnRenamed('ORIGIN_AIRPORT', 'AIRPORT_IATA_CODE'))
+#                                  .withColumnRenamed('AIRLINE', 'AIRLINE_IATA_CODE').distinct()
+#                                  .orderBy('AIRPORT_IATA_CODE', 'AIRPORT', 'AIRLINE_IATA_CODE', 'AIRLINE_NAME'))
+#
+# airports_and_airline_names_df.show(30)
+#
+#
+#
+# cancel_and_processed_flight_df = (airports_and_airline_names_df.join(cancelled_df,
+#                                                                      (airports_and_airline_names_df['AIRPORT_IATA_CODE'] ==
+#                                                                       cancelled_df['ORIGIN_AIRPORT'])
+#                                                                      & (airports_and_airline_names_df['AIRLINE_IATA_CODE'] ==
+#                                                                         cancelled_df['AIRLINE']),
+#                                                                      'inner')
+#                                   .join(processed_df, (
+#             airports_and_airline_names_df['AIRPORT_IATA_CODE'] == processed_df['ORIGIN_AIRPORT'])
+#                                         & (airports_and_airline_names_df['AIRLINE_IATA_CODE'] == processed_df['AIRLINE']),
+#                                         'inner')
+#                                   .select(airports_and_airline_names_df['AIRPORT_IATA_CODE'],
+#                                           airports_and_airline_names_df['AIRPORT'],
+#                                           airports_and_airline_names_df['AIRLINE_IATA_CODE'],
+#                                           airports_and_airline_names_df['AIRLINE_NAME'],
+#                                           processed_df['PROCESSED_FLIGHTS'], cancelled_df['CANCELLED_FLIGHTS'])
+#                                   )
+#
+# # cancel_and_processed_flight_df.show(20)
+# #
+# cancel_and_processed_flight_df = cancel_and_processed_flight_df.withColumn("percentage",
+#                                                                            ((cancel_and_processed_flight_df['CANCELLED_FLIGHTS'] + cancel_and_processed_flight_df['PROCESSED_FLIGHTS'])/cancel_and_processed_flight_df['CANCELLED_FLIGHTS']))
+#
+#
+# cancel_and_processed_flight_df.orderBy('AIRLINE_NAME', 'percentage')
+# # cancel_and_processed_flight_df.show(20)
+#
+#
+# regioanal_airport_df = cancel_and_processed_flight_df.select("*").where(cancel_and_processed_flight_df['AIRPORT_IATA_CODE'] == 'ACT')
+# regioanal_airport_df.show()
 
 
 
