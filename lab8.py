@@ -3,6 +3,8 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType
 from pyspark.sql.functions import from_json, explode, col, to_date, sum
 
+from lab8util import get_total_price_and_sales
+
 
 def get_json_schema():
     json_schema = StructType([StructField('event', StringType(), True),
@@ -118,10 +120,7 @@ if __name__ == '__main__':
     print("printing flatteden df")
     print(flattened_df)
 
-    sum_df = flattened_df.where("event = 'order_created'") \
-        .withColumn("sales", col("price")*col("amount")) \
-        .groupBy("eventTime") \
-        .agg(sum("price").alias("sum_price"), sum("sales").alias("total_sales"))
+    sum_df = get_total_price_and_sales(flattened_df)
 
     write_output(sum_df)
 
