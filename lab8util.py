@@ -3,7 +3,6 @@ import pyspark.sql.functions as f
 
 def get_total_price_and_sales(df):
     return df.withColumn("sales", f.col("price") * f.col("amount")) \
-        .withWatermark("event_time", "1 minute") \
         .groupBy(f.window("event_time", "1 minute")) \
         .agg({'price': 'sum', 'sales': 'sum'})
 
@@ -12,6 +11,7 @@ def write_output(df, output_path, format='parquet', output_mode = "complete", ma
     # Write the output to console sink to check the output
     writing_df = df.writeStream \
         .format(format) \
+        .option("path", output_path) \
         .outputMode(output_mode) \
         .start()
     # todo clarify whether the trigger needed
