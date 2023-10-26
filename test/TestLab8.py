@@ -2,7 +2,7 @@ import unittest
 
 from pyspark.sql import SparkSession
 
-from lab8util import get_total_price_and_sales, add_sales_col
+from lab8util import get_total_price_and_sales
 
 spark = SparkSession.builder.appName("streaming_app").master('local[*]').getOrCreate()
 
