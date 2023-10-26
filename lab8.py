@@ -125,7 +125,7 @@ if __name__ == '__main__':
                           .drop("datetime"))
 
     print("printing flatteden df with timestamp")
-    print(flattened_df)
+    print(df_with_event_time)
 
     sum_df = get_total_price_and_sales(flattened_df)
 
