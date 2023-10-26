@@ -7,7 +7,7 @@ def get_total_price_and_sales(df):
         .agg({'price': 'sum', 'sales': 'sum'})
 
 
-def write_output(df, output_path, format='parquet', output_mode = "completed", manual_interuption = False):
+def write_output(df, output_path, format='parquet', output_mode = "complete", manual_interuption = False):
     # Write the output to console sink to check the output
     writing_df = df.writeStream \
         .format(format) \
