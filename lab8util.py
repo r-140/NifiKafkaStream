@@ -13,7 +13,7 @@ def write_output(df, output_path, format='parquet', manual_interuption = False):
         .format(format) \
         .option("checkpointLocation", "checkpoint_dir") \
         .outputMode("complete") \
-        .start(output_path)
+        .start()
     # todo clarify whether the trigger needed
     # .trigger("1 minute") \
 
