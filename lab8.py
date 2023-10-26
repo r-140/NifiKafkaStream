@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
     # Flatten the exploded df
     flattened_df = (exploded_df
-                    .selectExpr("bitstamps.id as id"
+                    .selectExpr("bitstamps.id as id",
                                 "bitstamps.datetime as datetime",
                                 "bitstamps.amount as amount",
                                 "bitstamps.price as price")
