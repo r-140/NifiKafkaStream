@@ -1,5 +1,4 @@
 import argparse
-from datetime import datetime
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType, LongType
@@ -46,8 +45,7 @@ def create_streaming_df(spark: SparkSession, topic_name: str):
                     .option("startingOffsets", "earliest")
                     .load())
     return streaming_df
-            # .withWatermark("eventTime", "1 minute")
-
+    # .withWatermark("eventTime", "1 minute")
 
 
 # todo consider whether watermark is required
@@ -105,7 +103,6 @@ if __name__ == '__main__':
         .withColumn("bitstamps", explode("data.bitstamps")) \
         .drop("data")
 
-
     print("printing exploded df")
     print(exploded_df)
 
@@ -131,4 +128,4 @@ if __name__ == '__main__':
 
     output_path = bucket + "/" + folder
 
-    write_output(sum_df, output_path, format='Console', manual_interuption=True)
+    write_output(sum_df, output_path, format='console', manual_interuption=True)
