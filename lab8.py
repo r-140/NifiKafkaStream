@@ -103,7 +103,7 @@ if __name__ == '__main__':
     exploded_df = json_expanded_df \
         .select("event", "data") \
         .withColumn("bitstamps", explode("data.bitstamps")) \
-        .drop("data").dropDuplicates(["bitstamps.id"])
+        .drop("data")
 
 
     print("printing exploded df")
@@ -111,10 +111,11 @@ if __name__ == '__main__':
 
     # Flatten the exploded df
     flattened_df = (exploded_df
-                    .selectExpr("bitstamps.datetime as datetime",
+                    .selectExpr("bitstamps.id as id"
+                                "bitstamps.datetime as datetime",
                                 "bitstamps.amount as amount",
                                 "bitstamps.price as price")
-                    )
+                    ).dropDuplicates(["id"])
 
     print("printing flatteden df")
     print(flattened_df)
