@@ -1,10 +1,20 @@
+from datetime import datetime
+
 from pyspark.sql import SparkSession, Window
-from pyspark.sql.functions import when, col, count, to_date
+from pyspark.sql.functions import when, col, count, to_date, to_timestamp
 
 spark = SparkSession.builder.appName("find_most_popular_dest_airport").getOrCreate()
 
-df = spark.createDataFrame([('1997-02-28 10:30:00',)], ['t'])
-print(df.select(to_date(df.t, "yyyy-MM-dd-HH-mm").alias('date')).collect())
+# df = spark.createDataFrame([('1997-02-28 10:30:00',)], ['t'])
+# print(df.select(to_date(df.t, "yyyy-MM-dd-HH-mm").alias('date')).collect())
+
+
+df = spark.createDataFrame([('123', 1697972957)], schema=['id', 'datetime'])
+
+df = df.withColumn("eventTime", to_timestamp(col("datetime")))
+
+df.show()
+
 
 
 #

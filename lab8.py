@@ -3,7 +3,7 @@ from datetime import datetime
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType, LongType
-from pyspark.sql.functions import from_json, explode, col, to_date, sum
+from pyspark.sql.functions import from_json, explode, col, to_date, sum, to_timestamp
 
 from lab8util import get_total_price_and_sales, write_output
 
@@ -121,9 +121,10 @@ if __name__ == '__main__':
     print(flattened_df)
 
     df_with_event_time = (flattened_df
-                          .withColumn("eventTime", datetime.fromtimestamp(flattened_df["datetime"]))
+                          .withColumn("eventTime", to_timestamp(col("datetime")))
                           .drop("datetime"))
 
+    print("printing flatteden df with timestamp")
     print(flattened_df)
 
     sum_df = get_total_price_and_sales(flattened_df)
