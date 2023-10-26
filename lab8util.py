@@ -11,7 +11,7 @@ def write_output(df, output_path, format='parquet', manual_interuption = False):
     # Write the output to console sink to check the output
     writing_df = df.writeStream \
         .format(format) \
-        .option("checkpointLocation", "checkpoint_dir") \
+        .trigger("1 minute") \
         .outputMode("complete") \
         .start()
     # todo clarify whether the trigger needed
