@@ -45,9 +45,9 @@ def create_streaming_df(spark: SparkSession, topic_name: str):
                      .option("subscribe", topic_name))
                     .option("startingOffsets", "earliest")
                     .load())
-    return (streaming_df
+    return streaming_df
             # .withWatermark("eventTime", "1 minute")
-            .dropDuplicates(["id"]))
+
 
 
 # todo consider whether watermark is required
@@ -103,7 +103,8 @@ if __name__ == '__main__':
     exploded_df = json_expanded_df \
         .select("event", "data") \
         .withColumn("bitstamps", explode("data.bitstamps")) \
-        .drop("data")
+        .drop("data").dropDuplicates(["bitstamps.id"])
+
 
     print("printing exploded df")
     print(exploded_df)
