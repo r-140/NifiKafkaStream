@@ -3,6 +3,7 @@ import pyspark.sql.functions as f
 
 def get_total_price_and_sales(df):
     return df.withColumn("sales", f.col("price") * f.col("amount")) \
+        .withWatermark("event_time", "1 minute") \
         .groupBy(f.window("event_time", "1 minute")) \
         .agg({'price': 'sum', 'sales': 'sum'})
 
