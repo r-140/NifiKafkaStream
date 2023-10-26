@@ -121,7 +121,7 @@ if __name__ == '__main__':
     print(flattened_df)
 
     df_with_event_time = (flattened_df
-                          .withColumn("eventTime", to_timestamp(col("datetime")))
+                          .withColumn("event_time", to_timestamp(col("datetime")))
                           .drop("datetime"))
 
     print("printing flatteden df with timestamp")
