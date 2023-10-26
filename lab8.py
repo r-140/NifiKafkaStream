@@ -127,7 +127,7 @@ if __name__ == '__main__':
     print("printing flatteden df with timestamp")
     print(df_with_event_time)
 
-    sum_df = get_total_price_and_sales(flattened_df)
+    sum_df = get_total_price_and_sales(df_with_event_time)
 
     output_path = bucket + "/" + folder
 
