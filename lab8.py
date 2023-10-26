@@ -123,4 +123,4 @@ if __name__ == '__main__':
 
     output_path = bucket + "/" + folder
 
-    write_output(sum_df, output_path, manual_interuption=True)
+    write_output(sum_df, output_path, format='csv', manual_interuption=True)
