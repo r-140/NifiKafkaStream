@@ -87,11 +87,13 @@ if __name__ == '__main__':
     json_df = streaming_df.selectExpr("cast(value as string) as value")
     print("showing json df")
     print(json_df)
+    json_df.printSchema()
 
     json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
 
+
     print("showing json expanded df")
-    print(json_expanded_df)
+    json_expanded_df.printSchema()
 
     exploded_df = json_expanded_df \
         .select("event", "data") \
