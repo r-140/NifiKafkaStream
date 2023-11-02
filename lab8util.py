@@ -4,11 +4,12 @@ from pyspark.sql.types import StringType, StructField, StructType, DoubleType, I
 
 def get_total_price_and_sales(df):
     return df.withColumn("sales", f.col("price") * f.col("amount")) \
+        .withWatermark("time", "5 years") \
         .groupBy(f.window("event_time", "1 minute")) \
         .agg({'*': 'count', 'price': 'sum', 'sales': 'sum'})
 
 
-def write_output(df, output_path, format='parquet', output_mode = "complete", manual_interuption = False):
+def write_output(df, output_path, format='parquet', output_mode = "append", manual_interuption = False):
     # Write the output to console sink to check the output
     writing_df = df.writeStream \
         .format(format) \

@@ -89,9 +89,6 @@ if __name__ == '__main__':
                           .withColumn("event_time", to_timestamp(col("datetime")))
                           .drop("datetime"))
 
-    # print("printing flatteden df with timestamp")
-    # print(df_with_event_time)
-
     agg_query = get_total_price_and_sales(df_with_event_time)
 
     print("printing aggregation result")
