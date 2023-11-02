@@ -93,6 +93,8 @@ if __name__ == '__main__':
     print("showing json expanded df")
     json_expanded_df.printSchema()
 
+    spark.conf.set("spark.sql.shuffle.partitions", 3)
+
     write_output(json_expanded_df, "output_path", format='console',manual_interuption=True)
 
     # exploded_df = json_expanded_df \
