@@ -65,13 +65,10 @@ if __name__ == '__main__':
     json_df.printSchema()
 
     json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
-    # json_expanded_df = json_df.select(from_json("value", get_json_schema()).alias("data"))
     print("showing json expanded df")
     json_expanded_df.printSchema()
 
     spark.conf.set("spark.sql.shuffle.partitions", 3)
-
-
 
     # Flatten the exploded df
     flattened_df = (json_expanded_df
@@ -81,9 +78,7 @@ if __name__ == '__main__':
                                 "data.price as price")
                     ).dropDuplicates(["id"])
 
-    print("printing flattedned df schema")
     flattened_df.printSchema()
-    # print(flattened_df)
 
     df_with_event_time = (flattened_df
                           .withColumn("event_time", to_timestamp(col("datetime")))
@@ -92,8 +87,6 @@ if __name__ == '__main__':
     agg_query = get_total_price_and_sales(df_with_event_time)
 
     print("printing aggregation result")
-
-    # spark.table(agg_query).show(truncate=False)
 
     output_path = bucket + "/" + folder
 

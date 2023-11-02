@@ -12,17 +12,17 @@ def get_total_price_and_sales(df):
         .withColumnRenamed("avg(price)", "avg_price")
 
 
-def write_output(df, output_path, format='parquet', output_mode = "append", manual_interuption = False):
-    # Write the output to console sink to check the output
+def write_output(df, output_path, format='parquet', output_mode="append", manual_interuption=False):
     writing_df = df.writeStream \
         .format(format) \
         .option("parquet.block.size", 1024) \
         .option("path", output_path) \
         .outputMode(output_mode) \
-        .option("checkpointLocation", "checkpoint_dir") \
+        .option("checkpointLocation", output_path) \
         .start()
     if manual_interuption:
         writing_df.awaitTermination()
+
 
 def get_json_schema():
     json_schema = StructType([
@@ -31,7 +31,7 @@ def get_json_schema():
             StructField('id', StringType(), True),
             StructField('order_type', IntegerType(), True),
             StructField('datetime', StringType(), True),
-            StructField('amount', DoubleType(),True),
+            StructField('amount', DoubleType(), True),
             StructField('amount_traded', StringType(), True),
             StructField('amount_at_create', StringType(), True),
             StructField('price', DoubleType(), True)

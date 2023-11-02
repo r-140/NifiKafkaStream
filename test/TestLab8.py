@@ -36,7 +36,6 @@ class TestMySparkFunctionsForTask1(unittest.TestCase):
 
     def test_parse_json(self):
         df = spark.read.schema(get_json_schema()).json("data.json")
-        # df = spark.read.json("data.json")
         df.printSchema()
         df.show()
 
