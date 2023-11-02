@@ -94,7 +94,7 @@ if __name__ == '__main__':
     print("showing json expanded df")
     json_expanded_df.printSchema()
 
-    write_output(json_expanded_df, "output_path", format='console', output_mode='append', manual_interuption=True)
+    write_output(json_expanded_df, "output_path", manual_interuption=True)
 
     # exploded_df = json_expanded_df \
     #     .select("event", "data") \
