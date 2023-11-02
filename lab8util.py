@@ -10,6 +10,7 @@ def write_output(df, output_path, format='parquet', output_mode = "complete", ma
     # Write the output to console sink to check the output
     writing_df = df.writeStream \
         .format(format) \
+        .outputMode(output_mode) \
         .option("checkpointLocation","checkpoint_dir") \
         .start()
     if manual_interuption:
