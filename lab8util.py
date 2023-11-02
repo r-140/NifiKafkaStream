@@ -4,7 +4,7 @@ from pyspark.sql.types import StringType, StructField, StructType, DoubleType, I
 
 def get_total_price_and_sales(df):
     return df.withColumn("sales", f.col("price") * f.col("amount")) \
-        .withWatermark("time", "5 years") \
+        .withWatermark("event_time", "5 years") \
         .groupBy(f.window("event_time", "1 minute")) \
         .agg({'*': 'count', 'price': 'sum', 'sales': 'sum'})
 
