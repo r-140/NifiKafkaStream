@@ -10,40 +10,39 @@ from lab8util import get_total_price_and_sales, write_output
 def get_json_schema():
     json_schema = StructType([StructField('event', StringType(), True),
                               StructField('data',
-                                          StructType([
-                                              StructField('bitstamps',
-                                                          ArrayType(
-                                                              StructType([
-                                                                  StructField('id', StringType(), True),
-                                                                  StructField('order_type',
-                                                                              StringType(), True),
-                                                                  StructField('datetime',
-                                                                              LongType(), True),
-                                                                  StructField('amount', DoubleType(),
-                                                                              True),
-                                                                  StructField('amount_traded',
-                                                                              DoubleType(), True),
-                                                                  StructField('amount_at_create',
-                                                                              DoubleType(), True),
-                                                                  StructField('price', DoubleType(),
-                                                                              True)
-                                                              ]),
+                                          ArrayType(
+                                              StructType([
+                                                  StructField('id', StringType(), True),
+                                                  StructField('order_type',
+                                                              StringType(), True),
+                                                  StructField('datetime',
+                                                              LongType(), True),
+                                                  StructField('amount', DoubleType(),
                                                               True),
-                                                          True)]),
+                                                  StructField('amount_traded',
+                                                              DoubleType(), True),
+                                                  StructField('amount_at_create',
+                                                              DoubleType(), True),
+                                                  StructField('price', DoubleType(),
+                                                              True)
+                                              ]),
+                                              True),
                                           True)])
     return json_schema
 
 
 # topic name nain_test_topic
-def create_streaming_df(topic_name: str, bootstrap_servers = "127.0.0.1:9092", starting_offsets = "earliest", include_headers="true"):
+def create_streaming_df(topic_name: str, bootstrap_servers="127.0.0.1:9092", starting_offsets="earliest",
+                        include_headers="true"):
     # Create the streaming_df to read from kafka
     return ((spark.readStream
-                     .format("kafka")
-                     .option("kafka.bootstrap.servers", bootstrap_servers)
-                     .option("subscribe", topic_name))
-                    .option("startingOffsets", starting_offsets)
-                    .option("includeHeaders", include_headers)
-                    .load())
+             .format("kafka")
+             .option("kafka.bootstrap.servers", bootstrap_servers)
+             .option("subscribe", topic_name))
+            .option("startingOffsets", starting_offsets)
+            .option("includeHeaders", include_headers)
+            .load())
+
 
 def get_args():
     parser = argparse.ArgumentParser()
@@ -83,13 +82,14 @@ if __name__ == '__main__':
     print("showing streaming_df")
     streaming_df.printSchema()
 
+    # json_expanded_df = streaming_df.selectExpr("cast(value as string) as json") \
+    #                     .select(from_json("json", get_json_schema()).as("data"))
+
     json_df = streaming_df.selectExpr("cast(value as string) as value")
     print("showing json df")
-    print(json_df)
     json_df.printSchema()
 
     json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
-
 
     print("showing json expanded df")
     json_expanded_df.printSchema()
@@ -125,8 +125,7 @@ if __name__ == '__main__':
 
     print("printing aggregation result")
 
-    spark.table(agg_query).show(truncate=False)
-
+    # spark.table(agg_query).show(truncate=False)
 
     output_path = bucket + "/" + folder
 
