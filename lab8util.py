@@ -6,7 +6,10 @@ def get_total_price_and_sales(df):
     return df.withColumn("sales", f.col("price") * f.col("amount")) \
         .withWatermark("event_time", "5 years") \
         .groupBy(f.window("event_time", "1 minute")) \
-        .agg({'*': 'count', 'price': 'sum', 'sales': 'sum'})
+        .agg({'*': 'count', 'price': 'avg', 'sales': 'sum'}) \
+        .withColumnRenamed("sum(sales)", "total_sales") \
+        .withColumnRenamed("count(1)", "total_records") \
+        .withColumnRenamed("avg(price)", "avg_price")
 
 
 def write_output(df, output_path, format='parquet', output_mode = "append", manual_interuption = False):

@@ -23,9 +23,9 @@ class TestMySparkFunctionsForTask1(unittest.TestCase):
 
         agg_df = get_total_price_and_sales(df)
 
-        expected1 = [(39.5, 4, 310.81)]
-        expected2 = [(19.0, 3, 68.38)]
-        expected3 = [(52.60000000000001, 4, 379.46)]
+        expected1 = [(9.875, 4, 310.81)]
+        expected2 = [(6.333333333333333, 3, 68.38)]
+        expected3 = [(13.150000000000002, 4, 379.46)]
 
         actual = agg_df.collect()
 
