@@ -1,7 +1,6 @@
 import argparse
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import  col,  to_timestamp
 
 from lab8util import get_total_price_and_sales, write_output, flatten_json_df, get_json_df, convert_event_time
 
