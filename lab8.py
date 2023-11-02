@@ -76,6 +76,8 @@ if __name__ == '__main__':
     folder = get_arg(args_dict, "folder")
     topic = get_arg(args_dict, "topic")
 
+    print(f"params: bucket: {bucket}, folder: {folder}, topic: {topic}")
+
     spark = get_spark_session()
 
     streaming_df = create_streaming_df(topic)
@@ -89,12 +91,14 @@ if __name__ == '__main__':
     print("showing json df")
     json_df.printSchema()
 
-    json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
+    write_output(json_df, "output_path", format='console', manual_interuption=True)
 
-    print("showing json expanded df")
-    json_expanded_df.printSchema()
+    # json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
+    #
+    # print("showing json expanded df")
+    # json_expanded_df.printSchema()
 
-    write_output(json_expanded_df, "output_path", format='console',manual_interuption=True)
+    # write_output(json_expanded_df, "output_path", format='console',manual_interuption=True)
 
     # exploded_df = json_expanded_df \
     #     .select("event", "data") \
