@@ -94,20 +94,20 @@ if __name__ == '__main__':
     print("showing json expanded df")
     json_expanded_df.printSchema()
 
-    exploded_df = json_expanded_df \
-        .select("event", "data") \
-        .withColumn("bitstamps", explode("data.*")) \
-        .drop("data")
+    # exploded_df = json_expanded_df \
+    #     .select("event", "data") \
+    #     .withColumn("bitstamps", explode("data.bitstamps")) \
+    #     .drop("data")
 
     # print("printing exploded df")
     # print(exploded_df)
 
     # Flatten the exploded df
-    flattened_df = (exploded_df
-                    .selectExpr("bitstamps.id as id",
-                                "bitstamps.datetime as datetime",
-                                "bitstamps.amount as amount",
-                                "bitstamps.price as price")
+    flattened_df = (json_expanded_df
+                    .selectExpr("data.id as id",
+                                "data.datetime as datetime",
+                                "data.amount as amount",
+                                "data.price as price")
                     ).dropDuplicates(["id"])
 
     print("printing flattedned df schema")
