@@ -15,7 +15,7 @@ def write_output(df, output_path, format='parquet', output_mode = "complete", ma
         .option("parquet.block.size", 1024) \
         .option("path", output_path) \
         .outputMode(output_mode) \
-        .option("checkpointLocation", output_path) \
+        .option("checkpointLocation", "checkpoint_dir") \
         .start()
     if manual_interuption:
         writing_df.awaitTermination()

@@ -98,6 +98,6 @@ if __name__ == '__main__':
 
     # spark.table(agg_query).show(truncate=False)
 
-    output_path = "gs://" + bucket + "/" + folder
+    output_path = bucket + "/" + folder
 
     write_output(agg_query, output_path, manual_interuption=True)
