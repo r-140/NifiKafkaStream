@@ -2,11 +2,10 @@ import pyspark.sql.functions as f
 
 
 def get_total_price_and_sales(df):
-    agg_df = df.withColumn("sales", f.col("price") * f.col("amount")) \
+    return df.withColumn("sales", f.col("price") * f.col("amount")) \
         .groupBy(f.window("event_time", "1 minute")) \
         .agg({'*': 'count', 'price': 'sum', 'sales': 'sum'})
 
-    return agg_df.withColumn("id", f.monotonically_increasing_id())
 
 
 

@@ -30,9 +30,9 @@ class TestMySparkFunctionsForTask1(unittest.TestCase):
         actual = agg_df.collect()
 
         self.assertEqual(len(actual), 3)
-        self.assertEqual([actual[0][1:-1]], expected1)
-        self.assertEqual([actual[1][1:-1]], expected2)
-        self.assertEqual([actual[2][1:-1]], expected3)
+        self.assertEqual([actual[0][1:]], expected1)
+        self.assertEqual([actual[1][1:]], expected2)
+        self.assertEqual([actual[2][1:]], expected3)
 
 
 if __name__ == '__main__':
