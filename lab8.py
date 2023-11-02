@@ -22,9 +22,10 @@ def get_json_schema():
                                                   StructField('amount_at_create',
                                                               DoubleType(), True),
                                                   StructField('price', DoubleType(),
-                                                              True),
-                                          True])
-                                          )])
+                                                              True)
+                                          ])
+                                          )
+                              ])
     return json_schema
 
 
