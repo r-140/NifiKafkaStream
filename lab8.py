@@ -99,34 +99,36 @@ if __name__ == '__main__':
         .withColumn("bitstamps", explode("data")) \
         .drop("data")
 
+    write_output(exploded_df, "output_path", format='console', manual_interuption=True)
+
     # print("printing exploded df")
     # print(exploded_df)
 
     # Flatten the exploded df
-    flattened_df = (exploded_df
-                    .selectExpr("bitstamps.id as id",
-                                "bitstamps.datetime as datetime",
-                                "bitstamps.amount as amount",
-                                "bitstamps.price as price")
-                    ).dropDuplicates(["id"])
-
-    print("printing flattedned df schema")
-    flattened_df.printSchema()
-    # print(flattened_df)
-
-    df_with_event_time = (flattened_df
-                          .withColumn("event_time", to_timestamp(col("datetime")))
-                          .drop("datetime"))
-
-    # print("printing flatteden df with timestamp")
-    # print(df_with_event_time)
-
-    agg_query = get_total_price_and_sales(df_with_event_time)
-
-    print("printing aggregation result")
-
-    # spark.table(agg_query).show(truncate=False)
-
-    output_path = bucket + "/" + folder
-
-    write_output(agg_query, output_path, format='console', manual_interuption=True)
+    # flattened_df = (exploded_df
+    #                 .selectExpr("bitstamps.id as id",
+    #                             "bitstamps.datetime as datetime",
+    #                             "bitstamps.amount as amount",
+    #                             "bitstamps.price as price")
+    #                 ).dropDuplicates(["id"])
+    #
+    # print("printing flattedned df schema")
+    # flattened_df.printSchema()
+    # # print(flattened_df)
+    #
+    # df_with_event_time = (flattened_df
+    #                       .withColumn("event_time", to_timestamp(col("datetime")))
+    #                       .drop("datetime"))
+    #
+    # # print("printing flatteden df with timestamp")
+    # # print(df_with_event_time)
+    #
+    # agg_query = get_total_price_and_sales(df_with_event_time)
+    #
+    # print("printing aggregation result")
+    #
+    # # spark.table(agg_query).show(truncate=False)
+    #
+    # output_path = bucket + "/" + folder
+    #
+    # write_output(agg_query, output_path, format='console', manual_interuption=True)
