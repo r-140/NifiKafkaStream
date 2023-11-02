@@ -9,9 +9,7 @@ from lab8util import get_total_price_and_sales, write_output
 
 def get_json_schema():
     json_schema = StructType([StructField('event', StringType(), True),
-                              StructField('data',
-                                          ArrayType(
-                                              StructType([
+                              StructField('data',StructType([
                                                   StructField('id', StringType(), True),
                                                   StructField('order_type',
                                                               StringType(), True),
@@ -24,10 +22,9 @@ def get_json_schema():
                                                   StructField('amount_at_create',
                                                               DoubleType(), True),
                                                   StructField('price', DoubleType(),
-                                                              True)
-                                              ]),
-                                              True),
-                                          True)])
+                                                              True),
+                                          True])
+                                          )])
     return json_schema
 
 
@@ -91,7 +88,7 @@ if __name__ == '__main__':
     # write_output(json_df, "output_path", format='console', manual_interuption=True)
 
     # json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
-    json_expanded_df = json_df.select(from_json("value", get_json_schema()).as("data"))
+    json_expanded_df = json_df.select(from_json("value", get_json_schema()).alias("data"))
     print("showing json expanded df")
     json_expanded_df.printSchema()
 
