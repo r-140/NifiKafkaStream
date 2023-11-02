@@ -99,7 +99,7 @@ if __name__ == '__main__':
         .withColumn("bitstamps", explode("data")) \
         .drop("data")
 
-    write_output(exploded_df, "output_path", format='console', manual_interuption=True)
+    write_output(exploded_df, "output_path", format='console', output_mode='append', manual_interuption=True)
 
     # print("printing exploded df")
     # print(exploded_df)
