@@ -19,7 +19,7 @@ def write_output(df, output_path, format='parquet', output_mode="append", manual
         .option("path", output_path) \
         .outputMode(output_mode) \
         .option("checkpointLocation", output_path) \
-        .start()
+        .start(output_path+"/output")
     if manual_interuption:
         writing_df.awaitTermination()
 
