@@ -16,10 +16,10 @@ def write_output(df, output_path, format='parquet', output_mode="append", manual
     writing_df = df.writeStream \
         .format(format) \
         .option("parquet.block.size", 1024) \
-        .option("path", output_path) \
+        .option("path", output_path+"output") \
         .outputMode(output_mode) \
-        .option("checkpointLocation", output_path) \
-        .start(output_path+"/output")
+        .option("checkpointLocation", output_path+"/checkpoint_dir") \
+        .start()
     if manual_interuption:
         writing_df.awaitTermination()
 

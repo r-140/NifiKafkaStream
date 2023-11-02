@@ -68,8 +68,6 @@ if __name__ == '__main__':
     print("showing json expanded df")
     json_expanded_df.printSchema()
 
-    # spark.conf.set("spark.sql.shuffle.partitions", 3)
-
     # Flatten the exploded df
     flattened_df = (json_expanded_df
                     .selectExpr("data.id as id",
