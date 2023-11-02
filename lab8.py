@@ -4,29 +4,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType, LongType
 from pyspark.sql.functions import from_json, explode, col, to_date, sum, to_timestamp
 
-from lab8util import get_total_price_and_sales, write_output
-
-
-def get_json_schema():
-    json_schema = StructType([StructField('event', StringType(), True),
-                              StructField('data',StructType([
-                                                  StructField('id', StringType(), True),
-                                                  StructField('order_type',
-                                                              StringType(), True),
-                                                  StructField('datetime',
-                                                              LongType(), True),
-                                                  StructField('amount', DoubleType(),
-                                                              True),
-                                                  StructField('amount_traded',
-                                                              DoubleType(), True),
-                                                  StructField('amount_at_create',
-                                                              DoubleType(), True),
-                                                  StructField('price', DoubleType(),
-                                                              True)
-                                          ])
-                                          )
-                              ])
-    return json_schema
+from lab8util import get_total_price_and_sales, write_output, get_json_schema
 
 
 # topic name nain_test_topic

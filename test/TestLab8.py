@@ -2,7 +2,7 @@ import unittest
 
 from pyspark.sql import SparkSession
 
-from lab8util import get_total_price_and_sales
+from lab8util import get_total_price_and_sales, get_json_schema
 
 spark = SparkSession.builder.appName("streaming_app").master('local[*]').getOrCreate()
 
@@ -33,6 +33,18 @@ class TestMySparkFunctionsForTask1(unittest.TestCase):
         self.assertEqual([actual[0][1:]], expected1)
         self.assertEqual([actual[1][1:]], expected2)
         self.assertEqual([actual[2][1:]], expected3)
+
+    def test_parse_json(self):
+        df = spark.read.schema(get_json_schema()).json("data.json")
+        # df = spark.read.json("data.json")
+        df.printSchema()
+        df.show()
+
+        actual = df.select("data").collect()
+
+        print(actual)
+        print(actual[0])
+        print(actual[0][1])
 
 
 if __name__ == '__main__':
