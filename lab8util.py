@@ -1,5 +1,5 @@
 import pyspark.sql.functions as f
-from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType, LongType, IntegerType
+from pyspark.sql.types import StringType, StructField, StructType, DoubleType, IntegerType
 
 
 def get_total_price_and_sales(df):
@@ -15,14 +15,8 @@ def write_output(df, output_path, format='parquet', output_mode = "complete", ma
         .option("parquet.block.size", 1024) \
         .option("path", output_path) \
         .outputMode(output_mode) \
+        .option("checkpointLocation", "checkpoint_dir") \
         .start()
-    # todo clarify whether the trigger needed
-    # .trigger("1 minute") \
-    # print("writing to output file")
-    # writing_df.
-    # Start the streaming application to run until the following happens
-    # 1. Exception in the running program
-    # 2. Manual Interruption
     if manual_interuption:
         writing_df.awaitTermination()
 
