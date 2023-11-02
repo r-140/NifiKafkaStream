@@ -64,8 +64,6 @@ if __name__ == '__main__':
     print("showing json df")
     json_df.printSchema()
 
-    # write_output(json_df, "output_path", format='console', manual_interuption=True)
-
     json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
     # json_expanded_df = json_df.select(from_json("value", get_json_schema()).alias("data"))
     print("showing json expanded df")
@@ -73,17 +71,7 @@ if __name__ == '__main__':
 
     spark.conf.set("spark.sql.shuffle.partitions", 3)
 
-    # write_output(json_expanded_df, "output_path", output_mode='append', format='console',manual_interuption=True)
 
-    # exploded_df = json_expanded_df \
-    #     .select("event", "data") \
-    #     .withColumn("bitstamps", explode("data")) \
-    #     .drop("data")
-
-
-
-    # print("printing exploded df")
-    # print(exploded_df)
 
     # Flatten the exploded df
     flattened_df = (json_expanded_df
@@ -112,4 +100,4 @@ if __name__ == '__main__':
 
     output_path = bucket + "/" + folder
 
-    write_output(agg_query, output_path, format='console', manual_interuption=True)
+    write_output(agg_query, output_path, output_mode='append', manual_interuption=True)

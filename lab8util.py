@@ -8,21 +8,11 @@ def get_total_price_and_sales(df):
         .agg({'*': 'count', 'price': 'sum', 'sales': 'sum'})
 
 
-# def write_output(df, output_path, format='parquet', output_mode="complete", manual_interuption=False):
-#     # Write the output to console sink to check the output
-#     writing_df = df.writeStream \
-#         .format(format) \
-#         .outputMode(output_mode) \
-#         .option("checkpointLocation", "checkpoint_dir") \
-#         .start()
-#     if manual_interuption:
-#         writing_df.awaitTermination()
-
-
 def write_output(df, output_path, format='parquet', output_mode = "complete", manual_interuption = False):
     # Write the output to console sink to check the output
     writing_df = df.writeStream \
         .format(format) \
+        .option("parquet.block.size", 1024) \
         .option("path", output_path) \
         .outputMode(output_mode) \
         .start()
