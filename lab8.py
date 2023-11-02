@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     exploded_df = json_expanded_df \
         .select("event", "data") \
-        .withColumn("bitstamps", explode("data.bitstamps")) \
+        .withColumn("bitstamps", explode("data.*")) \
         .drop("data")
 
     # print("printing exploded df")
