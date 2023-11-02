@@ -84,21 +84,18 @@ if __name__ == '__main__':
     print("showing streaming_df")
     streaming_df.printSchema()
 
-    # json_expanded_df = streaming_df.selectExpr("cast(value as string) as json") \
-    #                     .select(from_json("json", get_json_schema()).as("data"))
-
     json_df = streaming_df.selectExpr("cast(value as string) as value")
     print("showing json df")
     json_df.printSchema()
 
-    write_output(json_df, "output_path", format='console', manual_interuption=True)
+    # write_output(json_df, "output_path", format='console', manual_interuption=True)
 
     # json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
-    #
-    # print("showing json expanded df")
-    # json_expanded_df.printSchema()
+    json_expanded_df = json_df.select(from_json("value", get_json_schema()).as("data"))
+    print("showing json expanded df")
+    json_expanded_df.printSchema()
 
-    # write_output(json_expanded_df, "output_path", format='console',manual_interuption=True)
+    write_output(json_expanded_df, "output_path", format='console',manual_interuption=True)
 
     # exploded_df = json_expanded_df \
     #     .select("event", "data") \
