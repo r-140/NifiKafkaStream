@@ -2,9 +2,12 @@ import pyspark.sql.functions as f
 
 
 def get_total_price_and_sales(df):
-    return df.withColumn("sales", f.col("price") * f.col("amount")) \
+    agg_df = df.withColumn("sales", f.col("price") * f.col("amount")) \
         .groupBy(f.window("event_time", "1 minute")) \
-        .agg({'price': 'sum', 'sales': 'sum'})
+        .agg({'*': 'count', 'price': 'sum', 'sales': 'sum'})
+
+    return agg_df.withColumn("id", f.monotonically_increasing_id())
+
 
 
 def write_output(df, output_path, format='parquet', output_mode = "complete", manual_interuption = False):

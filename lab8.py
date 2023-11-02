@@ -30,8 +30,7 @@ def get_json_schema():
                                                               ]),
                                                               True),
                                                           True)]),
-                                          True),
-                              StructField('eventTime', StringType(), True)])
+                                          True)])
     return json_schema
 
 
@@ -111,7 +110,8 @@ if __name__ == '__main__':
                                 "bitstamps.price as price")
                     ).dropDuplicates(["id"])
 
-    # print("printing flatteden df")
+    print("printing flattedned df schema")
+    flattened_df.printSchema()
     # print(flattened_df)
 
     df_with_event_time = (flattened_df
@@ -124,6 +124,7 @@ if __name__ == '__main__':
     agg_query = get_total_price_and_sales(df_with_event_time)
 
     print("printing aggregation result")
+
     spark.table(agg_query).show(truncate=False)
 
 

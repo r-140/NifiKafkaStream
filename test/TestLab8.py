@@ -19,20 +19,20 @@ def prepare_df_for_aggregation():
 class TestMySparkFunctionsForTask1(unittest.TestCase):
 
     def test_get_total_sum_and_prices(self):
-        df = spark.createDataFrame(prepare_df_for_aggregation(), schema=['eventTime', 'amount', 'price'])
+        df = spark.createDataFrame(prepare_df_for_aggregation(), schema=['event_time', 'amount', 'price'])
 
         agg_df = get_total_price_and_sales(df)
 
-        expected1 = [('2023-10-25 09:18:05', 39.5, 310.81)]
-        expected2 = [('2023-10-25 09:17:05', 19.0, 68.38)]
-        expected3 = [('2023-10-25 09:16:05', 52.60000000000001, 379.46)]
+        expected1 = [(39.5, 4, 310.81)]
+        expected2 = [(19.0, 3, 68.38)]
+        expected3 = [(52.60000000000001, 4, 379.46)]
 
         actual = agg_df.collect()
 
         self.assertEqual(len(actual), 3)
-        self.assertEqual([actual[0]], expected1)
-        self.assertEqual([actual[1]], expected2)
-        self.assertEqual([actual[2]], expected3)
+        self.assertEqual([actual[0][1:-1]], expected1)
+        self.assertEqual([actual[1][1:-1]], expected2)
+        self.assertEqual([actual[2][1:-1]], expected3)
 
 
 if __name__ == '__main__':
