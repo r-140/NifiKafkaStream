@@ -36,13 +36,13 @@ class TestMySparkFunctionsForTask1(unittest.TestCase):
 
     def test_parse_json(self):
         df = spark.read.schema(get_json_schema()).json("data.json")
-        df.printSchema()
-        df.show()
+        actual = [row.asDict() for row in df.collect()]
 
-        actual = df.select("data").collect()
-
-        print(actual)
-        print(actual[0])
+        self.assertEqual(actual[0]['event'], 'order_deleted')
+        self.assertEqual(actual[0]['data']['id'], '1676246737752066')
+        self.assertEqual(actual[0]['data']['datetime'], '1698074907')
+        self.assertEqual(actual[0]['data']['amount'], 0.05296822)
+        self.assertEqual(actual[0]['data']['price'], 30814.0)
 
 
 if __name__ == '__main__':

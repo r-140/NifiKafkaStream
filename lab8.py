@@ -1,13 +1,11 @@
 import argparse
 
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StringType, StructField, StructType, ArrayType, DoubleType, LongType
-from pyspark.sql.functions import from_json, explode, col, to_date, sum, to_timestamp
+from pyspark.sql.functions import  col,  to_timestamp
 
-from lab8util import get_total_price_and_sales, write_output, get_json_schema
+from lab8util import get_total_price_and_sales, write_output, flatten_json_df, get_json_df, convert_event_time
 
 
-# topic name nain_test_topic
 def create_streaming_df(topic_name: str, bootstrap_servers="127.0.0.1:9092", starting_offsets="earliest",
                         include_headers="true"):
     # Create the streaming_df to read from kafka
@@ -38,8 +36,6 @@ def get_spark_session():
     return (SparkSession.builder
             .appName("streaming_tasks")
             .config("spark.streaming.stopGracefullyOnShutdown", True)
-            # .config('spark.jars.packages', 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.2.1')
-            # .config("spark.sql.shuffle.partitions", 3)
             .getOrCreate())
 
 
@@ -57,30 +53,15 @@ if __name__ == '__main__':
     spark = get_spark_session()
 
     streaming_df = create_streaming_df(topic)
-    print("showing streaming_df")
     streaming_df.printSchema()
 
-    json_df = streaming_df.selectExpr("cast(value as string) as value")
-    print("showing json df")
+    json_df = get_json_df(streaming_df)
     json_df.printSchema()
 
-    json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
-    print("showing json expanded df")
-    json_expanded_df.printSchema()
-
-    # Flatten the exploded df
-    flattened_df = (json_expanded_df
-                    .selectExpr("data.id as id",
-                                "data.datetime as datetime",
-                                "data.amount as amount",
-                                "data.price as price")
-                    ).dropDuplicates(["id"])
-
+    flattened_df = flatten_json_df(json_df)
     flattened_df.printSchema()
 
-    df_with_event_time = (flattened_df
-                          .withColumn("event_time", to_timestamp(col("datetime")))
-                          .drop("datetime"))
+    df_with_event_time = convert_event_time(flattened_df)
 
     agg_query = get_total_price_and_sales(df_with_event_time)
 

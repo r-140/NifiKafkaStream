@@ -16,9 +16,9 @@ def write_output(df, output_path, format='parquet', output_mode="append", manual
     writing_df = df.writeStream \
         .format(format) \
         .option("parquet.block.size", 1024) \
-        .option("path", output_path+"output") \
+        .option("path", output_path + "/output") \
         .outputMode(output_mode) \
-        .option("checkpointLocation", output_path+"/checkpoint_dir") \
+        .option("checkpointLocation", output_path + "/checkpoint_dir") \
         .start()
     if manual_interuption:
         writing_df.awaitTermination()
@@ -39,3 +39,23 @@ def get_json_schema():
                     )
     ])
     return json_schema
+
+
+def flatten_json_df(json_df):
+    return (json_df
+            .selectExpr("data.id as id",
+                        "data.datetime as datetime",
+                        "data.amount as amount",
+                        "data.price as price")
+            ).dropDuplicates(["id"])
+
+
+def get_json_df(streaming_df):
+    json_df = streaming_df.selectExpr("cast(value as string) as value")
+    return json_df.withColumn("value", f.from_json(json_df["value"], get_json_schema())).select("value.*")
+
+
+def convert_event_time(df):
+    return (df.withColumn("event_time", f.to_timestamp(f.col("datetime")))
+                          .drop("datetime"))
+
