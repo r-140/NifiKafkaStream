@@ -44,7 +44,6 @@ class TestMySparkFunctionsForTask1(unittest.TestCase):
 
         print(actual)
         print(actual[0])
-        print(actual[0][1])
 
 
 if __name__ == '__main__':

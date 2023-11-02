@@ -66,50 +66,50 @@ if __name__ == '__main__':
 
     # write_output(json_df, "output_path", format='console', manual_interuption=True)
 
-    # json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
-    json_expanded_df = json_df.select(from_json("value", get_json_schema()).alias("data"))
+    json_expanded_df = json_df.withColumn("value", from_json(json_df["value"], get_json_schema())).select("value.*")
+    # json_expanded_df = json_df.select(from_json("value", get_json_schema()).alias("data"))
     print("showing json expanded df")
     json_expanded_df.printSchema()
 
     spark.conf.set("spark.sql.shuffle.partitions", 3)
 
-    write_output(json_expanded_df, "output_path", output_mode='append', format='console',manual_interuption=True)
+    # write_output(json_expanded_df, "output_path", output_mode='append', format='console',manual_interuption=True)
 
-    # exploded_df = json_expanded_df \
-    #     .select("event", "data") \
-    #     .withColumn("bitstamps", explode("data")) \
-    #     .drop("data")
+    exploded_df = json_expanded_df \
+        .select("event", "data") \
+        .withColumn("bitstamps", explode("data")) \
+        .drop("data")
 
 
 
-    # print("printing exploded df")
-    # print(exploded_df)
+    print("printing exploded df")
+    print(exploded_df)
 
     # Flatten the exploded df
-    # flattened_df = (exploded_df
-    #                 .selectExpr("bitstamps.id as id",
-    #                             "bitstamps.datetime as datetime",
-    #                             "bitstamps.amount as amount",
-    #                             "bitstamps.price as price")
-    #                 ).dropDuplicates(["id"])
-    #
-    # print("printing flattedned df schema")
-    # flattened_df.printSchema()
-    # # print(flattened_df)
-    #
-    # df_with_event_time = (flattened_df
-    #                       .withColumn("event_time", to_timestamp(col("datetime")))
-    #                       .drop("datetime"))
-    #
-    # # print("printing flatteden df with timestamp")
-    # # print(df_with_event_time)
-    #
-    # agg_query = get_total_price_and_sales(df_with_event_time)
-    #
-    # print("printing aggregation result")
-    #
-    # # spark.table(agg_query).show(truncate=False)
-    #
-    # output_path = bucket + "/" + folder
-    #
-    # write_output(agg_query, output_path, format='console', manual_interuption=True)
+    flattened_df = (exploded_df
+                    .selectExpr("bitstamps.id as id",
+                                "bitstamps.datetime as datetime",
+                                "bitstamps.amount as amount",
+                                "bitstamps.price as price")
+                    ).dropDuplicates(["id"])
+
+    print("printing flattedned df schema")
+    flattened_df.printSchema()
+    # print(flattened_df)
+
+    df_with_event_time = (flattened_df
+                          .withColumn("event_time", to_timestamp(col("datetime")))
+                          .drop("datetime"))
+
+    # print("printing flatteden df with timestamp")
+    # print(df_with_event_time)
+
+    agg_query = get_total_price_and_sales(df_with_event_time)
+
+    print("printing aggregation result")
+
+    # spark.table(agg_query).show(truncate=False)
+
+    output_path = bucket + "/" + folder
+
+    write_output(agg_query, output_path, format='console', manual_interuption=True)
