@@ -100,8 +100,8 @@ if __name__ == '__main__':
         .withColumn("bitstamps", explode("data.bitstamps")) \
         .drop("data")
 
-    print("printing exploded df")
-    print(exploded_df)
+    # print("printing exploded df")
+    # print(exploded_df)
 
     # Flatten the exploded df
     flattened_df = (exploded_df
@@ -111,18 +111,22 @@ if __name__ == '__main__':
                                 "bitstamps.price as price")
                     ).dropDuplicates(["id"])
 
-    print("printing flatteden df")
-    print(flattened_df)
+    # print("printing flatteden df")
+    # print(flattened_df)
 
     df_with_event_time = (flattened_df
                           .withColumn("event_time", to_timestamp(col("datetime")))
                           .drop("datetime"))
 
-    print("printing flatteden df with timestamp")
-    print(df_with_event_time)
+    # print("printing flatteden df with timestamp")
+    # print(df_with_event_time)
 
-    sum_df = get_total_price_and_sales(df_with_event_time)
+    agg_query = get_total_price_and_sales(df_with_event_time)
+
+    print("printing aggregation result")
+    spark.table(agg_query).show(truncate=False)
+
 
     output_path = bucket + "/" + folder
 
-    write_output(sum_df, output_path, format='console', manual_interuption=True)
+    write_output(agg_query, output_path, format='console', manual_interuption=True)
