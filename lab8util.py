@@ -11,7 +11,6 @@ def write_output(df, output_path, format='parquet', output_mode = "complete", ma
     writing_df = df.writeStream \
         .format(format) \
         .option("checkpointLocation","checkpoint_dir") \
-        .outputMode(output_mode) \
         .start()
     if manual_interuption:
         writing_df.awaitTermination()
