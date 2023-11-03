@@ -5,7 +5,7 @@ from pyspark.sql import SparkSession
 from lab8util import get_total_price_and_sales, write_output, flatten_json_df, get_json_df, convert_event_time
 
 
-def create_streaming_df(topic_name: str, bootstrap_servers="127.0.0.1:9092", starting_offsets="earliest",
+def create_streaming_df(topic_name: str, bootstrap_servers="localhost:9092", starting_offsets="earliest",
                         include_headers="true"):
     # Create the streaming_df to read from kafka
     return ((spark.readStream
@@ -52,26 +52,26 @@ if __name__ == '__main__':
     spark = get_spark_session()
 
     streaming_df = create_streaming_df(topic)
-    streaming_df.printSchema()
-    streaming_df.writeStream.format("console").outputMode("append").start()
+    # streaming_df.printSchema()
+    # streaming_df.writeStream.format("console").outputMode("append").start()
 
     json_df = get_json_df(streaming_df)
-    json_df.printSchema()
-    json_df.writeStream.format("console").outputMode("append").start()
+    # json_df.printSchema()
+    # json_df.writeStream.format("console").outputMode("append").start()
 
     flattened_df = flatten_json_df(json_df)
-    flattened_df.writeStream.format("console").outputMode("append").start()
-    flattened_df.printSchema()
+    # flattened_df.writeStream.format("console").outputMode("append").start()
+    # flattened_df.printSchema()
 
     df_with_event_time = convert_event_time(flattened_df)
-    df_with_event_time.writeStream.format("console").outputMode("append").start()
+    # df_with_event_time.writeStream.format("console").outputMode("append").start()
 
     agg_query = get_total_price_and_sales(df_with_event_time)
 
-    agg_query.writeStream.format("console").outputMode("complete").start()
+    # agg_query.writeStream.format("console").outputMode("complete").start()
 
     print("printing aggregation result")
 
     output_path = bucket + "/" + folder
 
-    write_output(agg_query, output_path, manual_interuption=True)
+    write_output(agg_query, output_path, "agg_query", manual_interuption=True)
