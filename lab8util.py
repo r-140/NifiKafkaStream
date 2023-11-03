@@ -12,7 +12,7 @@ def get_total_price_and_sales(df, window_duration = "1 minute", watermark_delay_
         .withColumnRenamed("avg(price)", "avg_price")
 
 
-def write_output(df, output_path, format='parquet', output_mode="complete", manual_interuption=False):
+def write_output(df, output_path, format='parquet', output_mode="append", manual_interuption=False):
     writing_df = df.writeStream \
         .format(format) \
         .option("parquet.block.size", 1024) \

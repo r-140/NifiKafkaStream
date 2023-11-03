@@ -64,6 +64,8 @@ if __name__ == '__main__':
 
     agg_query = get_total_price_and_sales(df_with_event_time)
 
+    agg_query.writeStream.format("console").outputMode("complete").start()
+
     print("printing aggregation result")
 
     output_path = bucket + "/" + folder
