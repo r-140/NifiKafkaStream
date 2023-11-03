@@ -53,14 +53,18 @@ if __name__ == '__main__':
 
     streaming_df = create_streaming_df(topic)
     streaming_df.printSchema()
+    streaming_df.writeStream.format("console").outputMode("complete").start()
 
     json_df = get_json_df(streaming_df)
     json_df.printSchema()
+    json_df.writeStream.format("console").outputMode("complete").start()
 
     flattened_df = flatten_json_df(json_df)
+    flattened_df.writeStream.format("console").outputMode("complete").start()
     flattened_df.printSchema()
 
     df_with_event_time = convert_event_time(flattened_df)
+    df_with_event_time.writeStream.format("console").outputMode("complete").start()
 
     agg_query = get_total_price_and_sales(df_with_event_time)
 
