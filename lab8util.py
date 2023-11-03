@@ -2,10 +2,10 @@ import pyspark.sql.functions as f
 from pyspark.sql.types import StringType, StructField, StructType, DoubleType, IntegerType
 
 
-def get_total_price_and_sales(df):
+def get_total_price_and_sales(df, window_duration = "1 minute", watermark_delay_threshold = "3 minutes"):
     return df.withColumn("sales", f.col("price") * f.col("amount")) \
-        .withWatermark("event_time", "5 years") \
-        .groupBy(f.window("event_time", "1 minute")) \
+        .withWatermark("event_time", watermark_delay_threshold) \
+        .groupBy(f.window("event_time", window_duration)) \
         .agg({'*': 'count', 'price': 'avg', 'sales': 'sum'}) \
         .withColumnRenamed("sum(sales)", "total_sales") \
         .withColumnRenamed("count(1)", "total_records") \
@@ -56,6 +56,6 @@ def get_json_df(streaming_df):
 
 
 def convert_event_time(df):
-    return (df.withColumn("event_time", f.to_timestamp(f.col("datetime")))
-                          .drop("datetime"))
-
+    return (df.withColumn("event_time",
+                          f.to_utc_timestamp(f.from_unixtime(f.col("datetime")), 'EST'))
+            .drop("datetime"))
